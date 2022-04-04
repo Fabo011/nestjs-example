@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.9/sweetalert2.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.9/sweetalert2.min.js"></script>
+
+    <title>Nestjs Example</title>
+    <style>
+        .link{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <article id="main">
+        <header>
+           <h1>Hello at SaveBook</h1>
+           <span>
+               <p>You want to login and set a Profile-Image?<a @click.prevent="openLogin" class="link">Click here</a></p>
+           </span>
+        </header>
+
+        <section v-if="isOpen">
+            <form>
+                <h2>Login</h2>
+                <label for="username">Username</label>
+                <input type="text" v-model="uname" />
+                <label for="firstname">Firstname</label>
+                <input type="text" v-model="fname" />
+                <label for="lastname">Lastname</label>
+                <input type="text" v-model="lname" />
+                <label for="email">E-Mail</label>
+                <input type="email" v-model="mail" />
+                <button @click.prevent="sendData">Login</button> or
+                <a @click.prevent="closeLogin" class="link">Close</a>
+            </form>
+        </section>
+
+    </article>
+
+    <script>
+        "use strict"
+        new Vue({
+            el: '#main', 
+            data(){
+                return{
+                   isOpen: false,
+
+                   //data
+                   uname: '',
+                   fname: '',
+                   lname: '',
+                   mail: '',
+                }
+            },
+    
+            methods: {
+                openLogin(){
+                    this.isOpen= true;
+                },
+
+                closeLogin(){
+                    this.isOpen= false;
+                },
+
+               async sendData(){
+                   if(this.uname== '' || this.fname== '' || this.lname== '' || this.mail== ''){
+                    swal({
+                         title: 'Error',
+                         html: 'You have to fill out all the fields!',
+                         confirmButtonText: 'OK',
+                         confirmButtonColor: '#D90429',
+                            });
+                   }else{
+                    const username= this.uname;
+                    const firstname= this.fname;
+                    const lastname= this.lname;
+                    const email= this.mail;
+                    
+                   await fetch('/api/auth', options).then((res) => {
+                        if (res.status === 200) {
+                            this.isOpen= false;
+                            window.location.href= '/authArea';
+                        }
+                        else if (res.status === 400) {
+                            swal({
+                                title: 'Error',
+                                html: 'You did something wrong!',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#D90429',
+                            });//sweetalert
+                        };//if res status
+                    });//fetch
+                  };//all fields required if
+                } //getData function
+            },//methods
+
+
+
+        });
+    
+       </script>
+</body>
+</html>
