@@ -1,4 +1,4 @@
-import { Controller, Get, Render } from '@nestjs/common';
+import { Controller, Get, Render, Request } from '@nestjs/common';
 //import { AppService } from './app.service';
 
 @Controller()
@@ -9,5 +9,12 @@ export class AppController {
   @Render('Home')
   root()  {
     return {message: 'hello'};
+  }
+
+
+  @Get('profile')
+  @Render('Profile')
+  getProfile(@Request() req)  {
+    return req.user;
   }
 }

@@ -1,0 +1,12 @@
+
+
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+    "username": "Jonnieeeee",
+    "firstname": "Johhhnnnn",
+    "lastname": "Doeee",
+    "email": "save@tet.com",
+    "password": "123456789"
+}

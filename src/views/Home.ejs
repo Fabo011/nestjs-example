@@ -15,20 +15,25 @@
         .link{
             cursor: pointer;
         }
+        .success{
+            color: #5c9a4e;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <article id="main">
         <header>
-           <h1>Hello at SaveBook</h1>
+           <h1>Welcome to the Coding-Challenge</h1>
            <span>
-               <p>You want to login and set a Profile-Image?<a @click.prevent="openLogin" class="link">Click here</a></p>
+               <p>Do you want to login and set an Profile-Image?<a @click.prevent="openLogin" class="link"> Click here</a></p>
            </span>
         </header>
 
         <section v-if="isOpen">
-            <form>
-                <h2>Login</h2>
+            <form id="signup">
+                <a @click.prevent="opLogin" class="link">Already have an account? Click here</a>
+                <h2>SignUp</h2>
                 <label for="username">Username</label>
                 <input type="text" v-model="uname" />
                 <label for="firstname">Firstname</label>
@@ -37,7 +42,25 @@
                 <input type="text" v-model="lname" />
                 <label for="email">E-Mail</label>
                 <input type="email" v-model="mail" />
-                <button @click.prevent="sendData">Login</button> or
+                <label for="password">Password</label>
+                <input type="password" v-model="pass" />
+                <button @click.prevent="sendData">SignUp</button><br>
+                <a @click.prevent="closeLogin" class="link">Close</a>
+            </form>
+        </section>
+
+        <section v-if="isLogin">
+            <form id="login">
+                <a @click.prevent="openLogin" class="link">Click here for an new account</a>
+                <p v-if="logMessage" class="success">
+                    You are successfully registered. Now you can login to your account. Have fun!
+                </p>
+                <h2>Login</h2>
+                <label for="email">E-Mail</label>
+                <input type="email" v-model="mail" />
+                <label for="password">Password</label>
+                <input type="password" v-model="pass" />
+                <button @click.prevent="sendLogin">Login</button><br>
                 <a @click.prevent="closeLogin" class="link">Close</a>
             </form>
         </section>
@@ -51,26 +74,38 @@
             data(){
                 return{
                    isOpen: false,
+                   isLogin: false,
+                   logMessage: false,
 
                    //data
                    uname: '',
                    fname: '',
                    lname: '',
                    mail: '',
+                   pass: '',
                 }
             },
     
             methods: {
                 openLogin(){
                     this.isOpen= true;
+                    this.isLogin= false;
                 },
 
                 closeLogin(){
                     this.isOpen= false;
+                    this.isLogin= false;
                 },
 
+                opLogin(){
+                    this.isOpen= false;
+                    this.isLogin= true;
+                },
+
+
+                //signup
                async sendData(){
-                   if(this.uname== '' || this.fname== '' || this.lname== '' || this.mail== ''){
+                   if(this.uname== '' || this.fname== '' || this.lname== '' || this.mail== '' || this.pass== ''){
                     swal({
                          title: 'Error',
                          html: 'You have to fill out all the fields!',
@@ -82,23 +117,70 @@
                     const firstname= this.fname;
                     const lastname= this.lname;
                     const email= this.mail;
-                    
-                   await fetch('/api/auth', options).then((res) => {
-                        if (res.status === 200) {
+                    const password= this.pass;
+
+                    const data= {username, firstname, lastname, email, password};
+                    const options = {
+                           method:'POST',
+                           headers:{'Content-Type': 'application/json'},
+                           body: JSON.stringify(data)
+                          };
+                   await fetch('/auth/signup', options).then((res) => {
+                        if (res.status === 200 || res.status === 201) {
                             this.isOpen= false;
-                            window.location.href= '/authArea';
+                            window.location.href= '/profile';
                         }
-                        else if (res.status === 400) {
+                        else{
                             swal({
                                 title: 'Error',
-                                html: 'You did something wrong!',
+                                html: 'You did something wrong! Probably the email is already in use.',
                                 confirmButtonText: 'OK',
                                 confirmButtonColor: '#D90429',
                             });//sweetalert
                         };//if res status
                     });//fetch
                   };//all fields required if
-                } //getData function
+                }, //getData function
+
+                 
+                //login
+                 async sendLogin(){
+                   if(this.mail== '' || this.pass== ''){
+                    swal({
+                         title: 'Error',
+                         html: 'You have to fill out all the fields!',
+                         confirmButtonText: 'OK',
+                         confirmButtonColor: '#D90429',
+                            });
+                   }else{
+                    const email= this.mail;
+                    const password= this.pass;
+
+                    const data= {email, password};
+                    const options = {
+                           method:'POST',
+                           headers:{'Content-Type': 'application/json'},
+                           body: JSON.stringify(data)
+                          };
+                   await fetch('/auth/login', options).then((res) => {
+                        if (res.status === 200 || res.status === 201) {
+                            this.isOpen= false;
+                            this.logMessage= false;
+                            window.location.href= '/profile';
+                        }
+                        else{
+                            swal({
+                                title: 'Error',
+                                html: 'You did something wrong! Wrong password or email.',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#D90429',
+                            });//sweetalert
+                        };//if res status
+                    });//fetch
+                  };//all fields required if
+                }, //getData function
+
+
             },//methods
 
 
