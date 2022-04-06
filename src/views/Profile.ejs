@@ -22,12 +22,29 @@
     <article id="proMain">
         <a @click.prevent="logout" class="link">Logout</a>
         <h1>Hello from profile</h1>
+
+
+        <section class="fileupload">
+              <form action="/files/upload" enctype="multipart/form-data" method="POST">
+                <h2 class="profile-h2">Upload image</h2>
+                <input type="file" name="file" accept="image/png, image/jpeg" style="width: 200px;" required /><br>
+                <button type="submit" class="proBtn">Upload</button>
+              </form>
+        </section>
     </article>
     
 
     <script>
        new Vue({
-        el: '#proMain', 
+        el: '#proMain',
+
+        data(){
+           return{
+              status: 0,
+           }
+        },
+
+        
         
             methods: {
                async logout(){
@@ -47,6 +64,11 @@
                        }
                    });
                 },//function
+
+                 mess(){
+                     this.success= true;
+                 }
+
             },
        });
     </script>

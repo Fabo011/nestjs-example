@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
@@ -7,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import 'dotenv/config';
 
 import { UserModule } from './auth/users.module';
-
+import { fileModule } from './uploads/file.module';
 
 const MongoDB:string= process.env.MONGODB;
 @Module({
@@ -15,6 +14,7 @@ const MongoDB:string= process.env.MONGODB;
     ConfigModule.forRoot(),
     MongooseModule.forRoot(MongoDB, { useNewUrlParser: true, useUnifiedTopology: true }),
      UserModule,
+     fileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
