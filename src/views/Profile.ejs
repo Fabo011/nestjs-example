@@ -18,8 +18,37 @@
     </style>
 </head>
 <body>
-    <a href="/" class="link">Logout</a>
-    <h1>Hello from profile</h1>
+
+    <article id="proMain">
+        <a @click.prevent="logout" class="link">Logout</a>
+        <h1>Hello from profile</h1>
+    </article>
     
+
+    <script>
+       new Vue({
+        el: '#proMain', 
+        
+            methods: {
+               async logout(){
+                    console.log('Logout');
+                    const log= 'logout';
+                    const data= {log};
+                    const options = {
+                           method:'POST',
+                           headers:{'Content-Type': 'application/json'},
+                           body: JSON.stringify(data)
+                          };
+                   await fetch('/auth/logout', options).then((res, err)=>{
+                       if(res.status === 200 || res.status === 201){
+                           window.location.href= '/';
+                       }else if(err){
+                           console.log(err);
+                       }
+                   });
+                },//function
+            },
+       });
+    </script>
 </body>
 </html>

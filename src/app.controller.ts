@@ -1,4 +1,5 @@
-import { Controller, Get, Render, Request } from '@nestjs/common';
+import { Controller, Get, Render, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 //import { AppService } from './app.service';
 
 @Controller()
@@ -11,10 +12,10 @@ export class AppController {
     return {message: 'hello'};
   }
 
-
+  @UseGuards(AuthGuard('jwt'))
   @Get('profile')
   @Render('Profile')
-  getProfile(@Request() req)  {
-    return req.user;
+  getProfile()  {
+    return {message: 'User is Online'};
   }
 }
