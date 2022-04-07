@@ -6,6 +6,7 @@ export type UserDocument = User & Document;
 
 @Schema()
 export class User {
+ 
 
   @Prop()
   username: string;
@@ -21,6 +22,11 @@ export class User {
 
   @Prop()
   password: string;
+
+  
+  @Prop()
+  image: string;
+  
   
 
 }
