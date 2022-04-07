@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { User } from '../schemas/users.schema';
+import {  Request, Response } from 'express';
 
 
 @Injectable()
@@ -26,7 +27,7 @@ export class FileController {
               fileFilter: imageFileFilter,
            }))
            @Bind(UploadedFile())
-           uploadFile(file: any, @Res() res: any) {
+           uploadFile(file: any, @Res() res: Response) {
            const filePath= file.filename;
            return res.redirect(`http://localhost:3000/files/${filePath}`);
             };
@@ -34,7 +35,7 @@ export class FileController {
         
 
             @Get(':imgpath')
-           async seeUploadedFile(@Param('imgpath') file, @Req() req, @Res() res, ) {
+           async seeUploadedFile(@Param('imgpath') file, @Req() req: Request, @Res() res: Response, ) {
                
                 const token= req.cookies.access_token;
        
@@ -43,13 +44,13 @@ export class FileController {
          
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //@ts-ignore
-                const access= decoded.email;
+                const access= decoded.username;
                 const image= `http://localhost:3000/files/my/${file}`;
                  
-               const user= await this.userModel.findOneAndUpdate({ access }, { image });
+               const user= await this.userModel.findOneAndUpdate({ username: access }, { image });
                 if(!user){console.log('No User');}
-
-                 return res.redirect('/profile');
+                
+                 return res.redirect(`/profile/${access}`);
             };
 
 
@@ -57,5 +58,6 @@ export class FileController {
             @Get('my/:imgpath')
             myImage(@Param('imgpath') file, @Res() res){
                 return res.sendFile(file, { root: './images' });
-            }
+            };
+
 };

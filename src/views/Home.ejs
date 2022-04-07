@@ -56,8 +56,8 @@
                     You are successfully registered. Now you can login to your account. Have fun!
                 </p>
                 <h2>Login</h2>
-                <label for="email">E-Mail</label>
-                <input type="email" v-model="mail" />
+                <label for="username">Username</label>
+                <input type="username" v-model="user" />
                 <label for="password">Password</label>
                 <input type="password" v-model="pass" />
                 <button @click.prevent="sendLogin">Login</button><br>
@@ -81,6 +81,7 @@
                    uname: '',
                    fname: '',
                    lname: '',
+                   user: '',
                    mail: '',
                    pass: '',
                 }
@@ -128,12 +129,12 @@
                    await fetch('/auth/signup', options).then((res) => {
                         if (res.status === 200 || res.status === 201) {
                             this.isOpen= false;
-                            window.location.href= '/profile';
+                            window.location.href= `/profile/${username}`;
                         }
                         else{
                             swal({
                                 title: 'Error',
-                                html: 'You did something wrong! Probably the email is already in use.',
+                                html: 'You did something wrong! Probably the username is already in use.',
                                 confirmButtonText: 'OK',
                                 confirmButtonColor: '#D90429',
                             });//sweetalert
@@ -145,7 +146,7 @@
                  
                 //login
                  async sendLogin(){
-                   if(this.mail== '' || this.pass== ''){
+                   if(this.user== '' || this.pass== ''){
                     swal({
                          title: 'Error',
                          html: 'You have to fill out all the fields!',
@@ -153,10 +154,10 @@
                          confirmButtonColor: '#D90429',
                             });
                    }else{
-                    const email= this.mail;
+                    const username= this.user;
                     const password= this.pass;
 
-                    const data= {email, password};
+                    const data= {username, password};
                     const options = {
                            method:'POST',
                            headers:{'Content-Type': 'application/json'},
@@ -166,12 +167,12 @@
                         if (res.status === 200 || res.status === 201) {
                             this.isOpen= false;
                             this.logMessage= false;
-                            window.location.href= '/profile';
+                            window.location.href= `/profile/${username}`;
                         }
                         else{
                             swal({
                                 title: 'Error',
-                                html: 'You did something wrong! Wrong password or email.',
+                                html: 'You did something wrong! Wrong username or password.',
                                 confirmButtonText: 'OK',
                                 confirmButtonColor: '#D90429',
                             });//sweetalert

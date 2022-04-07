@@ -6,9 +6,8 @@ export type UserDocument = User & Document;
 
 @Schema()
 export class User {
- 
 
-  @Prop()
+  @Prop({unique: true})
   username: string;
 
   @Prop()
@@ -17,18 +16,15 @@ export class User {
   @Prop()
   lastname: string;
 
-  @Prop({unique: true})
+  @Prop()
   email: string;
 
   @Prop()
   password: string;
 
-  
   @Prop()
   image: string;
   
-  
-
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

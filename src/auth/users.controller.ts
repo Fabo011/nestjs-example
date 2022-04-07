@@ -39,7 +39,7 @@ export class UserController {
     };
 
     //jwt token
-    const payload = { email: email };
+    const payload = { username: username };
     const token= this.jwtService.sign(payload);
    
     response.cookie('access_token', token, {
@@ -55,9 +55,9 @@ export class UserController {
 
   @Post('/login')
   async login(@Res() response: Response, @Body(ValidationPipe) loginCredentials: LoginCredentials): Promise<any> {
-    const { email, password } = loginCredentials;
+    const { username, password } = loginCredentials;
 
-    const user = await this.userModel.findOne({ email });
+    const user = await this.userModel.findOne({ username: username });
 
     if (!user) {
       console.log('No User');  
@@ -70,7 +70,7 @@ export class UserController {
     }
 
     //jwt token
-    const payload = { email: email };
+    const payload = { username: username };
     const token= this.jwtService.sign(payload);
    
     response.cookie('access_token', token, {
