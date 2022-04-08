@@ -25,9 +25,10 @@ export class AppController {
     const user= await this.userModel.findOne({ username: username });
       if(!user){
         console.log('No User');
-        return res.status(HttpStatus.BAD_REQUEST).send('Fail');
-       };
-     const img= user.image;
-    return { username, img };
+        return res.status(HttpStatus.BAD_REQUEST).redirect('/');
+       }else{
+         const img= user.image;
+         return { username, img };
+       }
   }
 }

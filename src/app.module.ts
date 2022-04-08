@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import 'dotenv/config';
 
@@ -19,7 +18,7 @@ const MongoDB:string= process.env.MONGODB;
      fileModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  //providers: [AppService],
  
 })
 export class AppModule {}
