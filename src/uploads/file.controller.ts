@@ -1,4 +1,5 @@
-import { Controller, Post, Get, Res, Param, Injectable, UploadedFile, Bind, UseInterceptors, Req } from '@nestjs/common';
+import { Controller, Post, Get, Res, Param,
+     Injectable, UploadedFile, Bind, UseInterceptors, Req, UseGuards } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { imageFileFilter } from './file.filter';
@@ -11,6 +12,10 @@ import {  Request, Response } from 'express';
 
 import * as sharp  from 'sharp';
 
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role } from 'src/schemas/role.enum';
+
 @Injectable()
 @Controller('files')
 export class FileController {
@@ -19,13 +24,15 @@ export class FileController {
      ) {}
  
   
+    @Roles(Role.PREMIUM)
+    @UseGuards(RolesGuard)
     @Post('/upload')
         @UseInterceptors(FileInterceptor('file', {
             storage: diskStorage({
                 destination: './images',
                 filename: editFileName,
-              }),
-              fileFilter: imageFileFilter, 
+                }),
+                fileFilter: imageFileFilter, 
            }))
            @Bind(UploadedFile())
           async uploadFile(file: any, @Req() req: Request, @Res() res: Response): Promise<any> {    
@@ -40,27 +47,26 @@ export class FileController {
                      .resize(80, 80).toFile(__dirname + `/images/${newFileName}`).catch((err: any)=>{
                            console.log(err); 
                      });
-            
-                        
-               const filePath= file.filename; //newFileName
-               const token= req.cookies.access_token;
+                       
+                const filePath= file.filename; //const filePath= newFileName in case of sharp is working
+                const token= req.cookies.access_token;
        
                 const Jwt:any= process.env.JWTTOKEN
                 const decoded= this.jwtService.verify(token, Jwt);
          
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //@ts-ignore
                 const access= decoded.username;
                 const image= `https://threesixty-server.herokuapp.com/files/my/${filePath}`;
-               const user= await this.userModel.findOneAndUpdate({ username: access }, { image });
+                const user= await this.userModel.findOneAndUpdate({ username: access }, { image });
                 if(!user){console.log('No User');}
                 
                  return res.redirect(`/profile/${access}`);
             };
            
 
+            //display the image at specific path
             @Get('my/:imgpath')
-           async myImage(@Param('imgpath') file, @Res() res){
+            async myImage(@Param('imgpath') file, @Res() res){
                 return res.sendFile(file, { root: './images' });
             };
 

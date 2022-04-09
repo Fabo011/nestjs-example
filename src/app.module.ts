@@ -18,7 +18,5 @@ const MongoDB:string= process.env.MONGODB;
      fileModule,
   ],
   controllers: [AppController],
-  //providers: [AppService],
- 
 })
 export class AppModule {}

@@ -42,6 +42,11 @@
                 <input type="text" v-model="lname" />
                 <label for="email">E-Mail</label>
                 <input type="email" v-model="mail" />
+                <label for="role">Standard or Premium Account?</label>
+                <select v-model="role">
+                    <option value="standard">Standard</option>
+                    <option value="premium">Premuim</option>
+                </select>
                 <label for="password">Password</label>
                 <input type="password" v-model="pass" />
                 <button @click.prevent="sendData">SignUp</button><br>
@@ -84,6 +89,7 @@
                    user: '',
                    mail: '',
                    pass: '',
+                   role: '',
                 }
             },
     
@@ -106,7 +112,7 @@
 
                 //signup
                async sendData(){
-                   if(this.uname== '' || this.fname== '' || this.lname== '' || this.mail== '' || this.pass== ''){
+                   if(this.uname== '' || this.fname== '' || this.lname== '' || this.mail== '' || this.pass== '' || this.role== ''){
                     swal({
                          title: 'Error',
                          html: 'You have to fill out all the fields!',
@@ -119,8 +125,9 @@
                     const lastname= this.lname;
                     const email= this.mail;
                     const password= this.pass;
+                    const role= this.role;
 
-                    const data= {username, firstname, lastname, email, password};
+                    const data= {username, firstname, lastname, email, password, role};
                     const options = {
                            method:'POST',
                            headers:{'Content-Type': 'application/json'},

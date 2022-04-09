@@ -22,12 +22,14 @@ export class UserController {
   @Post('/signup')
   async signUp(@Res() response: Response, @Body(ValidationPipe) userCredentials: UserCredentials): Promise<any> {
     
-    const { username, firstname, lastname, email, password } = userCredentials;
+    const { username, firstname, lastname, email, password, role } = userCredentials;
 
+    //hash the password with standard md5
     const Salt= 10
     const hash = await bcrypt.hash(password, Salt);
     
-    const user = new this.userModel({ username, firstname, lastname, email, password: hash });
+    //save new user to database MongoDb
+    const user = new this.userModel({ username, firstname, lastname, email, password: hash, role });
 
     try {
       await user.save();
@@ -38,8 +40,8 @@ export class UserController {
       throw error;
     };
 
-    //jwt token
-    const payload = { username: username };
+    //jwt token store httpOnly to prevent XSS-Attacks
+    const payload = { username: username, role: role };
     const token= this.jwtService.sign(payload);
    
     response.cookie('access_token', token, {
@@ -47,7 +49,7 @@ export class UserController {
        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
     }).send({success: true});
      
-  }; //signUp
+  }; //signUp End
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,20 +59,24 @@ export class UserController {
   async login(@Res() response: Response, @Body(ValidationPipe) loginCredentials: LoginCredentials): Promise<any> {
     const { username, password } = loginCredentials;
 
+    //find User from database
     const user = await this.userModel.findOne({ username: username });
 
+    //check if user is valid
     if (!user) {
       console.log('No User');  
     }
 
+    //check if password is valid
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
       console.log('Password not valid'); 
       return null;
     }
 
-    //jwt token
-    const payload = { username: username };
+    //jwt token store httpOnly to prevent XSS-Attacks
+    const theRole= user.role;
+    const payload = { username: username, role: theRole };
     const token= this.jwtService.sign(payload);
    
     response.cookie('access_token', token, {
@@ -78,14 +84,14 @@ export class UserController {
        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
     }).send({success: true});
 
-  }; //login
+  }; //login End
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   @Post('/logout')
   async logout(@Res() response: Response){
       response.clearCookie('access_token').send({success: true});
-  };//logout
+  };//logout End
     
 
 };

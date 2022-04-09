@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from '../schemas/users.schema';
 import { JwtModule } from '@nestjs/jwt';
 
+import { RolesGuard } from '../auth/roles.guard';
 
 const maxSize= 1024*1024*3;
 @Module({
@@ -25,8 +26,7 @@ const maxSize= 1024*1024*3;
         limits: { fileSize: maxSize, files: 1},
       })   
     ],
-
-
+    providers: [RolesGuard],
   })
   export class fileModule {}
   

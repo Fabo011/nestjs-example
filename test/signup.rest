@@ -8,5 +8,6 @@ Content-Type: application/json
     "firstname": "Johhhnnnn",
     "lastname": "Doeee",
     "email": "save@tet.com",
-    "password": "123456789"
+    "password": "123456789",
+    "role": "premium"
 }

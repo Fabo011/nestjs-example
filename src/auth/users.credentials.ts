@@ -22,6 +22,9 @@ export class UserCredentials {
   email: string;
 
   @IsString()
+  role: string;
+
+  @IsString()
   @MinLength(8, { message: 'Password must have atleast 8 characters!' })
   @MaxLength(20, { message: 'Password is too long, make sure that you have not more then 20 characters!' })
   password: string;
