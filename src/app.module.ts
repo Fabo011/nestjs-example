@@ -7,6 +7,7 @@ import 'dotenv/config';
 import { UserModule } from './auth/users.module';
 import { fileModule } from './uploads/file.module';
 import { UserSchema } from './schemas/users.schema';
+import { AppService } from './app.service';
 
 const MongoDB:string= process.env.MONGODB;
 @Module({
@@ -18,5 +19,6 @@ const MongoDB:string= process.env.MONGODB;
      fileModule,
   ],
   controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -8,6 +8,7 @@ import { UserSchema } from '../schemas/users.schema';
 import { JwtModule } from '@nestjs/jwt';
 
 import { RolesGuard } from '../auth/roles.guard';
+import { FileService } from './file.service';
 
 const maxSize= 1024*1024*3;
 @Module({
@@ -26,7 +27,7 @@ const maxSize= 1024*1024*3;
         limits: { fileSize: maxSize, files: 1},
       })   
     ],
-    providers: [RolesGuard],
+    providers: [RolesGuard, FileService],
   })
   export class fileModule {}
   

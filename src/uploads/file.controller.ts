@@ -1,27 +1,23 @@
-import { Controller, Post, Get, Res, Param,
-     Injectable, UploadedFile, Bind, UseInterceptors, Req, UseGuards } from '@nestjs/common';
+//nest
+import { Controller, Post, Get, Res, Param, Injectable, UploadedFile, Bind, UseInterceptors, Req, UseGuards } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+//file
 import { diskStorage } from 'multer';
 import { imageFileFilter } from './file.filter';
 import { editFileName } from './file.filename';
-import { InjectModel } from '@nestjs/mongoose';
-import { JwtService } from '@nestjs/jwt';
-import { Model } from 'mongoose';
-import { User } from '../schemas/users.schema';
+//express features
 import {  Request, Response } from 'express';
-
-import * as sharp  from 'sharp';
-
+//guards
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/schemas/role.enum';
+//service
+import { FileService } from './file.service';
 
 @Injectable()
 @Controller('files')
 export class FileController {
-    constructor(@InjectModel('User') private userModel: Model<User>,
-     private jwtService: JwtService
-     ) {}
+     constructor(private fileService: FileService) {}
  
   
     @Roles(Role.PREMIUM)
@@ -36,37 +32,19 @@ export class FileController {
            }))
            @Bind(UploadedFile())
           async uploadFile(file: any, @Req() req: Request, @Res() res: Response): Promise<any> {    
-        
-                //#issue
-                //error-code [Error: Input file is missing]
-                //noch keine Lösung gefunden, image wird in der Originalgröße gespeichert
-                //Ansatz: Image mit sharp in die Größe 80, 80 bringen und danach newFilename in DB speichern
-                //altes Image mit fs.unlink löschen
                 const newFileName= `new-${file.filename}`;
-                await sharp(__dirname + `/images/${file.filename}`)
-                     .resize(80, 80).toFile(__dirname + `/images/${newFileName}`).catch((err: any)=>{
-                           console.log(err); 
-                     });
+                const oldFileName= `${file.filename}`;
+                await this.fileService.fileResize({ newFileName, oldFileName });
                        
-                const filePath= file.filename; //const filePath= newFileName in case of sharp is working
                 const token= req.cookies.access_token;
-       
-                const Jwt:any= process.env.JWTTOKEN
-                const decoded= this.jwtService.verify(token, Jwt);
-         
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                const access= decoded.username;
-                const image= `https://threesixty-server.herokuapp.com/files/my/${filePath}`;
-                const user= await this.userModel.findOneAndUpdate({ username: access }, { image });
-                if(!user){console.log('No User');}
+                const user= await this.fileService.saveResizedImage({ newFileName, token });
                 
-                 return res.redirect(`/profile/${access}`);
+                 return res.redirect(`/profile/${user.access}`);
             };
            
-
             //display the image at specific path
             @Get('my/:imgpath')
-            async myImage(@Param('imgpath') file, @Res() res){
+            async myImage(@Param('imgpath') file, @Res() res): Promise<any>{
                 return res.sendFile(file, { root: './images' });
             };
 
